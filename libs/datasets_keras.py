@@ -5,7 +5,13 @@ from PIL import Image
 import numpy as np
 import random
 
-def load_dataset(dataset, bs, aug={'horizontal_flip': True, 'vertical_flip': True, 'rotation_range': 180}):
+def load_dataset(dataset, bs, aug={'horizontal_flip': True, 'vertical_flip': True, 'rotation_range': 180,'featurewise_center': True,
+                        'featurewise_std_normalization' : True,
+                        'shear_range' : 0.2,
+                        'zoom_range' : 0.5,
+                        'channel_shift_range' : 0.5,
+                        'width_shift_range' : 0.5,
+                        'height_shift_range' : 0.5}):
     train_files = [f'{dataset}/image-chips/{fname}' for fname in load_lines(f'{dataset}/train.txt')]
     valid_files = [f'{dataset}/image-chips/{fname}' for fname in load_lines(f'{dataset}/valid.txt')]
     
@@ -33,7 +39,7 @@ def load_img(fname):
     return np.array(Image.open(fname))
 
 def mask_to_classes(mask):
-    return to_categorical(mask[:,:,0], 6)
+    return to_categorical(mask[:,:,0], 4)
 
 class SegmentationSequence(Sequence):
     def __init__(self, dataset, image_files, datagen, bs):

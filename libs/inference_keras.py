@@ -3,7 +3,7 @@ import numpy as np
 import math
 from keras import models
 import os
-
+from tqdm import tqdm
 from libs.config import train_ids, test_ids, val_ids, LABELMAP_RGB
 
 def category2mask(img):
@@ -20,7 +20,7 @@ def category2mask(img):
 
     return mask
 
-def chips_from_image(img, size=300):
+def chips_from_image(img, size=320):
     shape = img.shape
 
     chip_count = math.ceil(shape[1] / size) * math.ceil(shape[0] / size)
@@ -35,7 +35,7 @@ def chips_from_image(img, size=300):
             chips.append((chip, x, y))
     return chips
 
-def run_inference_on_file(imagefile, predsfile, model, size=300):
+def run_inference_on_file(imagefile, predsfile, model, size=320):
     with Image.open(imagefile).convert('RGB') as img:
         nimg = np.array(Image.open(imagefile).convert('RGB'))
         shape = nimg.shape
@@ -45,9 +45,13 @@ def run_inference_on_file(imagefile, predsfile, model, size=300):
     prediction = np.zeros(shape[:2], dtype='uint8')
     chip_preds = model.predict(np.array([chip for chip, _, _ in chips]), verbose=True)
 
+    print(chip_preds.shape)
+
     for (chip, x, y), pred in zip(chips, chip_preds):
-        category_chip = np.argmax(pred, axis=-1) + 1
+        category_chip = np.argmax(pred, axis=-1)
+        print(category_chip)
         section = prediction[y:y+size, x:x+size].shape
+        print(section)
         prediction[y:y+size, x:x+size] = category_chip[:section[0], :section[1]]
 
     mask = category2mask(prediction)
@@ -62,12 +66,19 @@ def run_inference(dataset, model=None, model_path=None, basedir='predictions'):
     if model is None:
         model = models.load_model(model_path)
 
-    for scene in train_ids + val_ids + test_ids:
-        imagefile = f'{dataset}/images/{scene}-ortho.tif'
-        predsfile = os.path.join(basedir, f'{scene}-prediction.png')
+    test_file = open(os.path.join(dataset,'test.txt'),'r')
+
+    for scene in test_file.readlines():
+        if scene.find('.png') < 0:
+            continue
+        scene = scene.replace("\n","")
+        imagefile = f'{dataset}/JPEGImages/{scene}'
+        pred_name = scene.split('.')[0]
+        predsfile = os.path.join(basedir, f'{pred_name}-prediction.png')
 
         if not os.path.exists(imagefile):
             continue
 
         print(f'running inference on image {imagefile}.')
         run_inference_on_file(imagefile, predsfile, model)
+

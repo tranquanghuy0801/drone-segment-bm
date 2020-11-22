@@ -1,4 +1,5 @@
 LABELS = ['BUILDING', 'CLUTTER', 'VEGETATION', 'WATER', 'GROUND', 'CAR']
+LABELS_DEER = ['ground','tree','water','ignore']
 
 # Class to color (BGR)
 LABELMAP = {
@@ -22,9 +23,34 @@ INV_LABELMAP = {
     (200, 130,   0) : 6,
 }
 
-LABELMAP_RGB = { k: (v[2], v[1], v[0]) for k, v in LABELMAP.items() }
+LABELMAP_DEER = {
+    0 : (0, 0, 128),
+    1 : (0, 0, 0),
+    2 : (0, 128, 0),
+    3 : (0,  128,  128),
+}
+
+# Color (BGR) to class
+INV_LABELMAP_DEER = {
+    (0,  0, 128) : 0,
+    (0,  0, 0) : 1,
+    (0, 128, 0) : 2,
+    (0, 128, 128) : 3,
+}
+
+
+
+
+LABELMAP_RGB = { k: (v[2], v[1], v[0]) for k, v in LABELMAP_DEER.items() }
 
 INV_LABELMAP_RGB = { v: k for k, v in LABELMAP_RGB.items() }
+
+IMAGE_ORDERING_CHANNELS_LAST = "channels_last"
+IMAGE_ORDERING_CHANNELS_FIRST = "channels_first"
+
+# Default IMAGE_ORDERING = channels_last
+IMAGE_ORDERING = IMAGE_ORDERING_CHANNELS_LAST
+
 
 train_ids = [
     "1d4fbe33f3_F1BE1D4184INSPIRE",
