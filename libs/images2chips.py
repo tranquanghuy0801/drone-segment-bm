@@ -47,19 +47,19 @@ def color2class(orthochip, img):
 def image2tile(prefix, scene, orthofile, labelfile, windowx=width, windowy=height, stridex=stride, stridey=stride):
 
     ortho = cv2.imread(orthofile)
-    label = cv2.imread(labelfile)
+    # label = cv2.imread(labelfile)
 
     # Not using elevation in the sample - but useful to incorporate it ;)
     # eleva = cv2.imread(elevafile, -1)
 
-    assert(ortho.shape[0] == label.shape[0])
-    assert(ortho.shape[1] == label.shape[1])
+    # assert(ortho.shape[0] == label.shape[0])
+    # assert(ortho.shape[1] == label.shape[1])
 
     shape = ortho.shape
 
     xsize = shape[1]
     ysize = shape[0]
-    print(f"converting image {orthofile} {xsize}x{ysize} to chips ...")
+    print(f"converting image {orthofile} {xsize}x{ysize} to patches size {windowx} ...")
 
     counter = 0
 
@@ -67,49 +67,57 @@ def image2tile(prefix, scene, orthofile, labelfile, windowx=width, windowy=heigh
         for yi in range(0, shape[0] - windowy, stridey):
 
             orthochip = ortho[yi:yi+windowy, xi:xi+windowx, :]
-            labelchip = label[yi:yi+windowy, xi:xi+windowx, :]
+            # labelchip = label[yi:yi+windowy, xi:xi+windowx, :]
 
-            orthochip, classchip = color2class(orthochip, labelchip)
 
-            # if classchip is None:
-            #     continue
-
-            orthochip_filename = os.path.join(prefix, 'test-image-chips', scene + '-' + str(counter).zfill(6) + '.png')
-            labelchip_filename = os.path.join(prefix, 'test-label-chips', scene + '-' + str(counter).zfill(6) + '.png')
-
-            # with open(f"{prefix}/{dataset}", mode='a') as fd:
-            #     fd.write(scene + '-' + str(counter).zfill(6) + '.png\n')
+            orthochip_filename = os.path.join(prefix + '-images-patch2', scene + '-extra-' + str(windowx) + '-' + str(counter).zfill(6) + '.png')
+            # labelchip_filename = os.path.join(prefix, 'labels-patch2', scene + '-' + str(windowx) + '-' + str(counter).zfill(6) + '.png')
 
             cv2.imwrite(orthochip_filename, orthochip)
-            cv2.imwrite(labelchip_filename, classchip)
+            # cv2.imwrite(labelchip_filename, labelchip)
             counter += 1
 
 
 def run(prefix):
 
-    if not os.path.exists( os.path.join(prefix, 'test-image-chips') ):
-        os.mkdir(os.path.join(prefix, 'test-image-chips'))
+    image_dir = prefix + '-images-patch2'
+    label_dir = 'labels-patch2'
+    if not os.path.exists(image_dir):
+        # os.mkdir(os.path.join(prefix, image_dir))
+        os.mkdir(image_dir)
 
-    if not os.path.exists( os.path.join(prefix, 'test-label-chips') ):
-        os.mkdir(os.path.join(prefix, 'test-label-chips'))
+    # if not os.path.exists( os.path.join(prefix, label_dir) ):
+    #     os.mkdir(os.path.join(prefix, label_dir))
+    
+    print("Start processing")
+    # list_images = os.listdir(os.path.join(prefix, 'JPEGImages'))
+    list_images = os.listdir(prefix)
+    for image in list_images:
+        image_file = os.path.join(prefix, image)
+        label_file = ''
+        # label_file = os.path.join(prefix, 'SegmentationClassPNG', image)
+        for i in range(800, 2500, 300):
+            if os.path.exists(image_file):
+                image2tile(prefix, image.split('.')[0], image_file, label_file, windowx=i + 100, windowy=i, stridex=300, stridey=300)
+    print("End processing")
 
 
     # lines = [ line for line in open(f'{prefix}/index.csv') ]
     # num_images = len(lines) - 1
     # print(f"converting {num_images} images to chips - this may take a few minutes but only needs to be done once.")
-    train_file = open(os.path.join(prefix,'train.txt'),'r')
-    valid_file = open(os.path.join(prefix,'valid.txt'),'r')
-    test_file = open(os.path.join(prefix,'test.txt'),'r')
-    # lines = train_file.readlines() + valid_file.readlines()
-    lines = test_file.readlines()
+    # train_file = open(os.path.join(prefix,'train.txt'),'r')
+    # valid_file = open(os.path.join(prefix,'valid.txt'),'r')
+    # test_file = open(os.path.join(prefix,'test.txt'),'r')
+    # # lines = train_file.readlines() + valid_file.readlines()
+    # lines = test_file.readlines()
 
     # for line in os.listdir(os.path.join(prefix, "JPEGImages")):
-    for line in lines:
-        line = line.replace("\n","")
-        orthofile = os.path.join(prefix, 'JPEGImages', line)
-        labelfile = os.path.join(prefix, 'SegmentationClassPNG', line)
-        if os.path.exists(orthofile) and os.path.exists(labelfile):
-            image2tile(prefix, line.split('.')[0], orthofile, labelfile)
+    # for line in lines:
+    #     line = line.replace("\n","")
+    #     orthofile = os.path.join(prefix, 'JPEGImages', line)
+    #     labelfile = os.path.join(prefix, 'SegmentationClassPNG', line)
+    #     if os.path.exists(orthofile) and os.path.exists(labelfile):
+    #         image2tile(prefix, line.split('.')[0], orthofile, labelfile)
 
 if __name__ == "__main__":
     run("Photos")

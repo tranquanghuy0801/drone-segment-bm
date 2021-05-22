@@ -87,7 +87,10 @@ def plot_confusion_matrix(y_true, y_pred, classes,
 def score_masks(labelfile, predictionfile):
 
     label = cv2.imread(labelfile)
+    label = cv2.cvtColor(label, cv2.COLOR_RGB2BGR)
     prediction = cv2.imread(predictionfile)
+    prediction = cv2.cvtColor(prediction, cv2.COLOR_RGB2BGR)
+    cv2.imwrite('output/1.png', prediction)
 
     shape = label.shape[:2]
 

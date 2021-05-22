@@ -51,7 +51,6 @@ def run_inference_on_file(imagefile, predsfile, model, size=320):
         category_chip = np.argmax(pred, axis=-1)
         print(category_chip)
         section = prediction[y:y+size, x:x+size].shape
-        print(section)
         prediction[y:y+size, x:x+size] = category_chip[:section[0], :section[1]]
 
     mask = category2mask(prediction)
@@ -62,7 +61,6 @@ def run_inference(dataset, model=None, model_path=None, basedir='predictions'):
         os.mkdir(basedir)
     if model is None and model_path is None:
         raise Exception("model or model_path required")
-
     if model is None:
         model = models.load_model(model_path)
 

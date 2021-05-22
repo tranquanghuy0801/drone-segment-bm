@@ -28,12 +28,12 @@ if __name__ == '__main__':
     # model = models_keras.vgg16_segnet(4,input_height=320,input_width=320)
     # model = segunet.segunet(input_shape=320,n_labels=4)
     print(model.summary())
-    model.load_weights("model-best.h5")
-    print("Load weights successfully")
+    # model.load_weights("model-best.h5")
+    # print("Load weights successfully")
     # training_keras.train_model(dataset, model)
 
     #  # use the train model to run inference on all test scenes
-    inference_keras.run_inference(dataset, model=model, basedir="predictions")
+    # inference_keras.run_inference(dataset, model=model, basedir="predictions")
 
     # # scores all the test images compared to the ground truth labels then
     # # send the scores (f1, precision, recall) and prediction images to wandb

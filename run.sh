@@ -13,7 +13,7 @@ module load tensorflow/2.1.0-fosscuda-2019b-python-3.7.4
 cd /home/n10069275/projects/drone-segment-bm 
 
 source env/bin/activate
-
+ 
 
 python3 main_keras.py
 

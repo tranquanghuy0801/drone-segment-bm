@@ -17,6 +17,8 @@ Deer_Photos3
 Deer_Photos
 deer_sample
 env_label
+Photos_20120715_06
+output.zip
 env_train
 env
 *.h5
@@ -28,3 +30,6 @@ Annotations_Json_Hugh.zip
 extract_frame.py
 Json_Deer_Harry
 img/
+*.mov
+*.tar.gz
+Flight1_png/

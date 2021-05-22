@@ -7,10 +7,8 @@ import glob
 import os
 import os.path as osp
 import sys
-
 import imgviz
 import numpy as np
-
 import labelme
 
 
@@ -47,7 +45,7 @@ def main():
         class_name_to_id[class_name] = class_id
         # if class_id == 0:
         #     assert class_name == "__ignore__", "Ignore"
-            #  continue
+        #      continue
         # elif class_id == 0:
         #     assert class_name == "_background_", Background
         class_names.append(class_name)
